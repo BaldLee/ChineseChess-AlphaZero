@@ -1,5 +1,7 @@
 h5py==2.7.1
-tensorflow-gpu==1.3.0
+# the original version of tensorflow(-gpu) is 1.3.0, 1.15.4 is OK and compatible with current GPU
+# tensorflow-gpu==1.15.4
+# tensorflow==1.15.4
 tensorflow-tensorboard==0.1.8
 Keras==2.0.8
 numpy
