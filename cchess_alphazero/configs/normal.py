@@ -26,7 +26,7 @@ class EvaluateConfig:
 class PlayDataConfig:
     def __init__(self):
         self.sl_nb_game_in_file = 250
-        self.nb_game_in_file = 5
+        self.nb_game_in_file = 1 # DO NOT CHANGE IT, otherwise one paly_data file will be written mutilple games, which is unreadable by opt
         self.max_file_num = 300
         self.nb_game_save_record = 1
 
@@ -72,6 +72,7 @@ class TrainerConfig:
             (400000, 0.0001),
         ]
         self.sl_game_step = 2000
+        self.load_step = 16
 
 class ModelConfig:
     def __init__(self):

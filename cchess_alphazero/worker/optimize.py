@@ -26,7 +26,7 @@ from cchess_alphazero.lib.web_helper import http_request
 
 from keras.optimizers import SGD
 from keras.callbacks import TensorBoard
-from keras.utils import multi_gpu_model
+# from keras.utils import multi_gpu_model
 import keras.backend as K
 
 logger = getLogger(__name__)
@@ -129,11 +129,12 @@ class OptimizeWorker:
     def compile_model(self):
         self.opt = SGD(lr=0.02, momentum=self.config.trainer.momentum)
         losses = ['categorical_crossentropy', 'mean_squared_error']
-        if self.config.opts.use_multiple_gpus:
-            self.mg_model = multi_gpu_model(self.model.model, gpus=self.config.opts.gpu_num)
-            self.mg_model.compile(optimizer=self.opt, loss=losses, loss_weights=self.config.trainer.loss_weights)
-        else:
-            self.model.model.compile(optimizer=self.opt, loss=losses, loss_weights=self.config.trainer.loss_weights)
+        # if self.config.opts.use_multiple_gpus:
+        #     self.mg_model = multi_gpu_model(self.model.model, gpus=self.config.opts.gpu_num)
+        #     self.mg_model.compile(optimizer=self.opt, loss=losses, loss_weights=self.config.trainer.loss_weights)
+        # else:
+        #     self.model.model.compile(optimizer=self.opt, loss=losses, loss_weights=self.config.trainer.loss_weights)
+        self.model.model.compile(optimizer=self.opt, loss=losses, loss_weights=self.config.trainer.loss_weights)
 
     def update_learning_rate(self, total_steps):
         # The deepmind paper says
@@ -247,7 +248,8 @@ def expanding_data(data, use_history=False):
         try:
             policy = build_policy(action, flip=False)
         except Exception as e:
-            logger.error(f"Expand data error {e}, item = {item}, data = {data}, state = {state}")
+            # logger.error(f"Expand data error {e}, item = {item}, data = {data}, state = {state}")
+            logger.error(f"Expand data error {e}, item = {item}, state = {state}")
             return None
         real_data.append([state, policy, value])
         state = senv.step(state, action)
