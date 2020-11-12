@@ -16,9 +16,9 @@ class Config:
         self.internet = InternetConfig()
 
         if config_type == "mini":
-            import configs.mini as c
+            import cchess_alphazero.configs.mini as c
         elif config_type == "normal":
-            import configs.normal as c
+            import cchess_alphazero.configs.normal as c
         elif config_type == 'distribute':
             import cchess_alphazero.configs.distribute as c
         else:

@@ -206,6 +206,7 @@ class SelfPlayWorker:
                 data.append([history[k + 1], value])
                 value = -value
             self.save_play_data(idx, data)
+            logger.debug(f"process{self.pid} save paly data")
 
         self.cur_pipes.append(pipes)
         self.remove_play_data()
