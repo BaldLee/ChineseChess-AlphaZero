@@ -54,7 +54,7 @@ class PlayConfig:
 
 class TrainerConfig:
     def __init__(self):
-        self.min_games_to_begin_learn = 200 
+        self.min_games_to_begin_learn = 300 
         self.min_data_size_to_learn = 0
         self.cleaning_processes = 4 # RAM explosion...
         self.vram_frac = 1.0
@@ -72,7 +72,7 @@ class TrainerConfig:
             (400000, 0.0001),
         ]
         self.sl_game_step = 2000
-        self.load_step = 16
+        self.load_step = 200
 
 class ModelConfig:
     def __init__(self):

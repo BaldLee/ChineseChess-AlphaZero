@@ -26,7 +26,7 @@ from cchess_alphazero.lib.web_helper import http_request
 
 from keras.optimizers import SGD
 from keras.callbacks import TensorBoard
-# from keras.utils import multi_gpu_model
+from keras.utils import multi_gpu_model
 import keras.backend as K
 
 logger = getLogger(__name__)
@@ -64,14 +64,14 @@ class OptimizeWorker:
             if (len(files) < self.config.trainer.min_games_to_begin_learn \
               or ((last_file is not None and last_file in files) and files.index(last_file) + 1 + offset > len(files))):
                 if last_file is not None:
-                    logger.info('Waiting for enough data 300s, ' + str((len(files) - files.index(last_file)) * self.config.play_data.nb_game_in_file) \
+                    logger.info('Waiting for enough data 600s, ' + str((len(files) - files.index(last_file)) * self.config.play_data.nb_game_in_file) \
                             +' vs '+ str(self.config.trainer.min_games_to_begin_learn)+' games')
                 else:
-                    logger.info('Waiting for enough data 300s, ' + str(len(files) * self.config.play_data.nb_game_in_file) \
+                    logger.info('Waiting for enough data 600s, ' + str(len(files) * self.config.play_data.nb_game_in_file) \
                             +' vs '+ str(self.config.trainer.min_games_to_begin_learn)+' games')
                 if last_file is not None:
                     self.save_current_model(send=True)
-                time.sleep(300)
+                time.sleep(600)
             else:
                 if last_file is not None and last_file in files:
                     idx = files.index(last_file) + 1
@@ -128,12 +128,12 @@ class OptimizeWorker:
     def compile_model(self):
         self.opt = SGD(lr=0.02, momentum=self.config.trainer.momentum)
         losses = ['categorical_crossentropy', 'mean_squared_error']
-        # if self.config.opts.use_multiple_gpus:
-        #     self.mg_model = multi_gpu_model(self.model.model, gpus=self.config.opts.gpu_num)
-        #     self.mg_model.compile(optimizer=self.opt, loss=losses, loss_weights=self.config.trainer.loss_weights)
-        # else:
-        #     self.model.model.compile(optimizer=self.opt, loss=losses, loss_weights=self.config.trainer.loss_weights)
-        self.model.model.compile(optimizer=self.opt, loss=losses, loss_weights=self.config.trainer.loss_weights)
+        if self.config.opts.use_multiple_gpus:
+            self.mg_model = multi_gpu_model(self.model.model, gpus=self.config.opts.gpu_num)
+            self.mg_model.compile(optimizer=self.opt, loss=losses, loss_weights=self.config.trainer.loss_weights)
+        else:
+            self.model.model.compile(optimizer=self.opt, loss=losses, loss_weights=self.config.trainer.loss_weights)
+        # self.model.model.compile(optimizer=self.opt, loss=losses, loss_weights=self.config.trainer.loss_weights)
 
     def update_learning_rate(self, total_steps):
         # The deepmind paper says

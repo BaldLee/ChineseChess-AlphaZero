@@ -10,6 +10,7 @@ def set_session_config(per_process_gpu_memory_fraction=None, allow_growth=None, 
     import tensorflow as tf
     import keras.backend as K
 
+    tf.disable_v2_behavior()
     config = tf.ConfigProto(
         allow_soft_placement=True,
         gpu_options=tf.GPUOptions(
@@ -20,3 +21,4 @@ def set_session_config(per_process_gpu_memory_fraction=None, allow_growth=None, 
     )
     sess = tf.Session(config=config)
     K.set_session(sess)
+    
