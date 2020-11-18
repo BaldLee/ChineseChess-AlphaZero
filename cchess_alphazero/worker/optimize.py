@@ -103,6 +103,7 @@ class OptimizeWorker:
                     gc.collect()
                     self.dataset = deque(), deque(), deque()
                     self.backup_play_data(files)
+                    last_file = None
 
     def train_epoch(self, epochs):
         tc = self.config.trainer
