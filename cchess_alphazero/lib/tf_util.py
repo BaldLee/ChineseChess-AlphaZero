@@ -21,4 +21,4 @@ def set_session_config(per_process_gpu_memory_fraction=None, allow_growth=None, 
     )
     sess = tf.Session(config=config)
     K.set_session(sess)
-    
+    return sess   # this return value is used by agent to set keras session

@@ -46,8 +46,9 @@ def load_model(config, config_file=None):
     return model, use_history
 
 def start(config: Config):
-    set_session_config(per_process_gpu_memory_fraction=1, allow_growth=True, device_list=config.opts.device_list)
+    sess = set_session_config(per_process_gpu_memory_fraction=1, allow_growth=True, device_list=config.opts.device_list)
     current_model, use_history = load_model(config)
+    current_model.sess = sess
     m = Manager()
     cur_pipes = m.list([current_model.get_pipes() for _ in range(config.play.max_processes)])
     # play_worker = SelfPlayWorker(config, cur_pipes, 0)

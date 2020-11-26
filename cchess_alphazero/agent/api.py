@@ -35,6 +35,8 @@ class CChessModelAPI:
         return you
 
     def predict_batch_worker(self):
+        import keras.backend as K
+        K.set_session(self.agent_model.sess)
         if self.config.internet.distributed and self.need_reload:
             self.try_reload_model_from_internet()
         last_model_check_time = time()
