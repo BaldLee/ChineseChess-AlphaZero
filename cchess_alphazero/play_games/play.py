@@ -27,7 +27,7 @@ from cchess_alphazero.lib.tf_util import set_session_config
 
 logger = getLogger(__name__)
 main_dir = os.path.split(os.path.abspath(__file__))[0]
-PIECE_STYLE = 'WOOD'
+# PIECE_STYLE = 'SKELETON'
 
 def start(config: Config, human_move_first=True):
     global PIECE_STYLE
@@ -50,7 +50,7 @@ class PlayWithHuman:
         self.width = 521
         self.chessman_w = 57
         self.chessman_h = 57
-        self.disp_record_num = 15
+        self.disp_record_num = 30
         self.rec_labels = [None] * self.disp_record_num
         self.nn_value = 0
         self.mcts_moves = {}
@@ -60,14 +60,16 @@ class PlayWithHuman:
             self.chessman_h += 1
 
     def load_model(self):
+        sess = set_session_config(per_process_gpu_memory_fraction=1, allow_growth=True, device_list=self.config.opts.device_list)
         self.model = CChessModel(self.config)
         if self.config.opts.new or not load_best_model_weight(self.model):
             self.model.build()
+        self.model.sess = sess
 
     def init_screen(self):
         bestdepth = pygame.display.mode_ok([self.screen_width, self.height], self.winstyle, 32)
         screen = pygame.display.set_mode([self.screen_width, self.height], self.winstyle, bestdepth)
-        pygame.display.set_caption("中国象棋Zero")
+        pygame.display.set_caption("人机对弈")
         # create the background, tile the bgd image
         bgdtile = load_image(f'{self.config.opts.bg_style}.GIF')
         bgdtile = pygame.transform.scale(bgdtile, (self.width, self.height))
@@ -178,13 +180,15 @@ class PlayWithHuman:
             self.chessmans.draw(screen)
             pygame.display.update()
 
+        self.draw_widget(screen, widget_background)
+
         self.ai.close(wait=False)
         logger.info(f"Winner is {self.env.board.winner} !!!")
         self.env.board.print_record()
         game_id = datetime.now().strftime("%Y%m%d-%H%M%S")
         path = os.path.join(self.config.resource.play_record_dir, self.config.resource.play_record_filename_tmpl % game_id)
         self.env.board.save_record(path)
-        sleep(3)
+        sleep(5)
 
     def ai_move(self):
         ai_move_first = not self.human_move_first
@@ -245,13 +249,18 @@ class PlayWithHuman:
     def draw_widget(self, screen, widget_background):
         white_rect = Rect(0, 0, self.screen_width - self.width, self.height)
         widget_background.fill((255, 255, 255), white_rect)
-        pygame.draw.line(widget_background, (255, 0, 0), (10, 285), (self.screen_width - self.width - 10, 285))
+        # pygame.draw.line(widget_background, (255, 0, 0), (10, 285), (self.screen_width - self.width - 10, 285))
         screen.blit(widget_background, (self.width, 0))
         self.draw_records(screen, widget_background)
-        self.draw_evaluation(screen, widget_background) 
+        # self.draw_evaluation(screen, widget_background)
 
     def draw_records(self, screen, widget_background):
         text = '着法记录'
+        if self.env.board.is_end():
+            result_text = "黑胜!!!"
+            if self.env.winner == Winner.red:
+                result_text = "红胜!!!"
+            self.draw_label(screen, widget_background, result_text, 500, 48, 10)
         self.draw_label(screen, widget_background, text, 10, 16, 10)
         records = self.env.board.record.split('\n')
         font_file = self.config.resource.font_path
@@ -269,7 +278,7 @@ class PlayWithHuman:
         screen.blit(widget_background, (self.width, 0))
 
     def draw_evaluation(self, screen, widget_background):
-        title_label = 'CC-Zero信息'
+        title_label = 'AI信息'
         self.draw_label(screen, widget_background, title_label, 300, 16, 10)
         info_label = f'MCTS搜索次数：{self.config.play.simulation_num_per_move}'
         self.draw_label(screen, widget_background, info_label, 335, 14, 10)
@@ -304,7 +313,7 @@ class PlayWithHuman:
             t_rect.centerx = (self.screen_width - self.width) / 2
         widget_background.blit(label, t_rect)
         screen.blit(widget_background, (self.width, 0))
-        
+
 
 class Chessman_Sprite(pygame.sprite.Sprite):
     is_selected = False

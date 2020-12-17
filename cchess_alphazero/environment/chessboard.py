@@ -154,7 +154,7 @@ class Chessboard(object):
         for chessman in self.__chessmans_hash.values():
             chessman.clear_moving_list()
 
-    def move_chessman(self, chessman, col_num, row_num, 
+    def move_chessman(self, chessman, col_num, row_num,
                       is_record = False, old_x = 0, old_y = 0):
         if chessman.is_red == self.__is_red_turn:
             chessman_old = self.remove_chessman_target(col_num, row_num)
@@ -359,7 +359,7 @@ class Chessboard(object):
                 self.record += '\n'
             self.record += str(self.turns) + '.'
         else:
-            self.record += '\t'
+            self.record += '    '
         has_two, mark = self.check_two_chesses_in_one_row(chess, old_x, old_y)
         if has_two:
             self.record += mark

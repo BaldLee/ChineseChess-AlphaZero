@@ -16,7 +16,6 @@ from cchess_alphazero.lib.tf_util import set_session_config
 logger = getLogger(__name__)
 
 def start(config: Config, human_move_first=True):
-    set_session_config(per_process_gpu_memory_fraction=1, allow_growth=True, device_list=config.opts.device_list)
     play = PlayWithHuman(config)
     play.start(human_move_first)
 
@@ -31,9 +30,11 @@ class PlayWithHuman:
         self.human_move_first = True
 
     def load_model(self):
+        sess = set_session_config(per_process_gpu_memory_fraction=1, allow_growth=True, device_list=self.config.opts.device_list)
         self.model = CChessModel(self.config)
         if self.config.opts.new or not load_best_model_weight(self.model):
             self.model.build()
+        self.model.sess = sess
 
     def start(self, human_first=True):
         self.env.reset()
